@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/tsukinoko-kun/kamehameha/khh/compose"
 	"github.com/tsukinoko-kun/kamehameha/khh/config"
 )
 
@@ -44,5 +45,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("%+v\n", c)
+	comp, err := compose.Compile(c)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to compile compose: %v\n", err)
+		os.Exit(1)
+	}
+
+	defer comp.Down()
+	fmt.Printf("compose: %s\n", comp)
+
+	if err := comp.Up(); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to run compose: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("compose ran successfully %s\n", comp)
 }

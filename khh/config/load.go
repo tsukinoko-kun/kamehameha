@@ -57,14 +57,7 @@ func New(p string) error {
 		Journeys: []journey{
 			{
 				Name:  "get index",
-				Steps: []string{"GET http://nginx_service/ --status 200"},
-			},
-			{
-				Name: "get unknown",
-				Steps: []string{
-					"http get http://nginx_service/unknown --status 404",
-					"http head http://nginx_service/unknown --status 404",
-				},
+				Steps: []string{"curl http://nginx_service"},
 			},
 		},
 		Stages: []stage{
@@ -106,7 +99,9 @@ func getEncoderFromExtension(p string, f io.Writer) (Encoder, error) {
 		e.SetIndent("", "    ")
 		return e, nil
 	case ".yaml", ".yml":
-		return yaml.NewEncoder(f), nil
+		e := yaml.NewEncoder(f)
+		e.SetIndent(2)
+		return e, nil
 	case ".toml":
 		return toml.NewEncoder(f), nil
 	default:
